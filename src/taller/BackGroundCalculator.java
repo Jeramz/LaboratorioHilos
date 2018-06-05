@@ -39,7 +39,6 @@ public class BackGroundCalculator extends SwingWorker <String, Integer> {
         String resultado="";
         int suma=0,pares=0,impares=0;
         double promedio=0;
-        double calculo=0;
         
         for(int i=0;i<array.length;i++){
             
@@ -54,9 +53,9 @@ public class BackGroundCalculator extends SwingWorker <String, Integer> {
         else{
             setProgress(100 * (i+1)/array.length);
             try{
-                Thread.sleep(generator.nextInt(5));
+                Thread.sleep(generator.nextInt(5)); 
             }catch(InterruptedException ex){
-                StatusLabel.setText("");
+                StatusLabel.setText("Interrupted.");
                 resultTextArea.append(resultado);
             }
             suma+=array[i];

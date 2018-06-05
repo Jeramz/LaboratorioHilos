@@ -250,7 +250,7 @@ public class GUIarreglo extends javax.swing.JFrame {
         arreglo=new int[tamaño];
         
             for(int i=0;i<arreglo.length;i++){
-            arreglo[i]= (int) (Math.random() * 1000000) + 1;
+            arreglo[i]= (int) (Math.random() * 100) + 1;
             }
     }
     
