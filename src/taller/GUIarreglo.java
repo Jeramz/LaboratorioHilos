@@ -1,7 +1,8 @@
 /*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+  Clase GUIarreglo: Menú para el usuario
+  Autor: Jesus Ramirez-1731388 Andrés Felipe-1730534
+  email: jesus.zuluaga@correounivalle.edu.co - andres.lopez@correounivalle.edu.co
+  fecha: 2 mayo 2018
  */
 package taller;
 
@@ -56,6 +57,10 @@ public class GUIarreglo extends javax.swing.JFrame {
         tfTamañoArreglo = new javax.swing.JTextField();
         btCalcular = new javax.swing.JButton();
         btCancelar = new javax.swing.JButton();
+        taSinHilos.setEditable(false);
+        taHilo1.setEditable(false);
+        taHilo2.setEditable(false);
+        taHilo3.setEditable(false);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -246,30 +251,35 @@ public class GUIarreglo extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
     
+    //Define el tamaño del arreglo y lo llena de numeros aleatorios (entre el 1-100)
     public void crearArreglo(int tamaño){
         arreglo=new int[tamaño];
         
-            for(int i=0;i<arreglo.length;i++){
+        for(int i=0;i<arreglo.length;i++){
             arreglo[i]= (int) (Math.random() * 100) + 1;
-            }
+        }
     }
     
+    //Separa el array dado en tres más pequeños
     public void separarArray(){
-            int tamaño=(int) Math.floor(tamano/3);
-            a1=new int[tamaño];
-            a2=new int[tamaño];
-            if(arreglo.length%3==0){
-                a3=new int[tamaño];
-            }else{
-                a3=new int[tamaño+(tamano%3)];
-            }
+        int tamaño=(int) Math.floor(tamano/3);
+        a1=new int[tamaño];
+        a2=new int[tamaño];
+        if(arreglo.length%3==0){
+            a3=new int[tamaño];
+        }else{
+            a3=new int[tamaño+(tamano%3)];
+        }
+        
         for(int i=0;i<tamaño;i++){
             a1[i]=arreglo[i];
             a2[i]=arreglo[i+tamaño];
+            
             if(arreglo.length%3==0){
                 a3[i]=arreglo[i+(tamaño*2)];
             }else{
                 int aux=i;
+                
                 for(int j=i+(tamaño*2);j<tamano;j++){
                     a3[aux]=arreglo[j];
                     aux++;
@@ -294,6 +304,7 @@ public class GUIarreglo extends javax.swing.JFrame {
         taHilo1.setText("");
         taHilo2.setText("");
         taHilo3.setText("");
+        
         try{
             tamano=Integer.parseInt(tfTamañoArreglo.getText());
             tfTamañoArreglo.setText("");
@@ -302,15 +313,51 @@ public class GUIarreglo extends javax.swing.JFrame {
             statusSinHilos.setText("Enter an Integer.");
             
         }
-        if(tamano<3){
-            JOptionPane.showMessageDialog(null, "El tamaño del array debe ser mayor a 3");
-        }else{
         this.crearArreglo(tamano);
-        this.separarArray();
         sinHilos=new BackGroundCalculator(arreglo,taSinHilos,btCancelar,btCalcular,statusSinHilos);
-        hilo1=new BackGroundCalculator(a1,taHilo1,btCancelar,btCalcular,statusHilo1);
-        hilo2=new BackGroundCalculator(a2,taHilo2,btCancelar,btCalcular,statusHilo2);
-        hilo3=new BackGroundCalculator(a3,taHilo3,btCancelar,btCalcular,statusHilo3);
+        if(tamano>=3){
+            //JOptionPane.showMessageDialog(null, "El tamaño del array debe ser mayor a 3");
+            
+            this.separarArray();
+        
+            hilo1=new BackGroundCalculator(a1,taHilo1,btCancelar,btCalcular,statusHilo1);
+            hilo2=new BackGroundCalculator(a2,taHilo2,btCancelar,btCalcular,statusHilo2);
+            hilo3=new BackGroundCalculator(a3,taHilo3,btCancelar,btCalcular,statusHilo3);
+        
+            hilo1.addPropertyChangeListener(
+            new PropertyChangeListener(){
+                public void propertyChange(PropertyChangeEvent e){
+                    if(e.getPropertyName().equals("progress")){
+                        int newValue = (Integer) e.getNewValue();
+                        progressBarHilo1.setValue(newValue);
+                    }
+                }
+            });//end call to addPropertyChangeListener
+            
+            hilo2.addPropertyChangeListener(
+            new PropertyChangeListener(){
+                public void propertyChange(PropertyChangeEvent e){
+                    if(e.getPropertyName().equals("progress")){
+                        int newValue = (Integer) e.getNewValue();
+                        progressBarHilo2.setValue(newValue);
+                    }
+                }
+            });//end call to addPropertyChangeListener
+            
+            hilo3.addPropertyChangeListener(
+            new PropertyChangeListener(){
+                public void propertyChange(PropertyChangeEvent e){
+                    if(e.getPropertyName().equals("progress")){
+                        int newValue = (Integer) e.getNewValue();
+                        progressBarHilo3.setValue(newValue);
+                    }
+                }
+            });//end call to addPropertyChangeListener
+        
+            hilo1.execute();
+            hilo2.execute();
+            hilo3.execute();
+        }
         sinHilos.addPropertyChangeListener(
         new PropertyChangeListener(){
             public void propertyChange(PropertyChangeEvent e){
@@ -321,41 +368,10 @@ public class GUIarreglo extends javax.swing.JFrame {
             }
         });//end call to addPropertyChangeListener
         
-        hilo1.addPropertyChangeListener(
-        new PropertyChangeListener(){
-            public void propertyChange(PropertyChangeEvent e){
-                if(e.getPropertyName().equals("progress")){
-                    int newValue = (Integer) e.getNewValue();
-                    progressBarHilo1.setValue(newValue);
-                }
-            }
-        });//end call to addPropertyChangeListener
-        hilo2.addPropertyChangeListener(
-        new PropertyChangeListener(){
-            public void propertyChange(PropertyChangeEvent e){
-                if(e.getPropertyName().equals("progress")){
-                    int newValue = (Integer) e.getNewValue();
-                    progressBarHilo2.setValue(newValue);
-                }
-            }
-        });//end call to addPropertyChangeListener
-        hilo3.addPropertyChangeListener(
-        new PropertyChangeListener(){
-            public void propertyChange(PropertyChangeEvent e){
-                if(e.getPropertyName().equals("progress")){
-                    int newValue = (Integer) e.getNewValue();
-                    progressBarHilo3.setValue(newValue);
-                }
-            }
-        });//end call to addPropertyChangeListener
         btCalcular.setEnabled(false);
         btCancelar.setEnabled(true);
         
         sinHilos.execute();
-        hilo1.execute();
-        hilo2.execute();
-        hilo3.execute();
-        }
     }//GEN-LAST:event_btCalcularActionPerformed
 
     private void btCancelarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btCancelarActionPerformed
